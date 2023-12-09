@@ -1,6 +1,6 @@
-# hotspot-parrot-os
+# How to Create Hotspot in Parrot Os and share your wifi internet through hotspot
 
-## step 1: 
+## step 1: Checking if your wifi card supports Access Point (AP)
 check to see if the system supports access point supports for this run the command <br/>
    ```iw list``` <br/>
    ![image](https://github.com/MuhammadJamshaidGhaffar/hotspot-parrot-os/assets/75721211/b4889b6a-d743-46db-8cdc-48e399089ff0)
@@ -13,7 +13,7 @@ You should see an output as below
 
 Scroll up to where it says supported interface modes and check to see if AP is listed. If so we are good to go…
 
-## step 2: 
+## step 2: Creating virtual network interface
 Now we move on the most important step setting up a virtual wireless interface on top of our existing interface. this is also done using the iw command <br/>
 ```sudo iw phy phy0 interface add <interface_name> type __ap```
 ![image](https://github.com/MuhammadJamshaidGhaffar/hotspot-parrot-os/assets/75721211/ccb5735e-e5f5-47d8-b71e-b241cf85361f)
@@ -23,6 +23,8 @@ run the above command and then run ```ifconfig -a``` to list all devices. <br/>I
 ![image](https://github.com/MuhammadJamshaidGhaffar/hotspot-parrot-os/assets/75721211/57218634-37da-4d04-82d5-5fb4767ee6ba)
 
 So far we have created and configured a virtual interface, now to move on one of the most important steps is, to use hostapd to create the actual hotspot.
+
+```Note : If you're able to see and connect to your hotspot at this point then it means everything till now is perfect```
 
 ## step 3: Setting up the hostapd
 Install hostapd by this command if it is not installed ```apt-get install hostapd``` <br/>
@@ -78,6 +80,8 @@ interface=hotspot
 # Specify range of IP addresses for DHCP leasses
 dhcp-range=192.168.150.2,192.168.150.10
 ```
+Here replace hotspot with the name of network interface you created above
+
 ## step 5: Creating hotspot.sh script
 Now create anywhere you want a file named it hotspot.sh (best way to save script on Desktop) Edit it with any text editor like this:
 
@@ -93,7 +97,8 @@ sudo sysctl net.ipv4.ip_forward=1
 # Enable NAT
 sudo iptables -t nat -A POSTROUTING -o wlp2s0 -j MASQUERADE
 # Run access point daemon
-sudo hostapd /etc/hostapd.conf
+sudo hostapd <path_to_hostapd.conf>
+# e.g: /etc/hostapd.conf
 # Stop
 # Disable NAT
 sudo iptables -D POSTROUTING -t nat -o wlp2s0 -j MASQUERADE
@@ -104,15 +109,24 @@ sudo service dnsmasq stop
 sudo service hostapd stop
 ```
 
+Here replace hotspot with the name of network interface you created above.
+Replace <path_to_hostapd.conf> with the path of hostapd.conf file you created in step 3.
 You will probably need to change wlp2s0 in this to eth0 or any other number which refers to your wired connection from where you're actually getting internet.
+
 
 Now change the permissions of hotspot.sh to make it executable
 ```chmod +x hotspot.sh```
 
 ## step 6: Start the hostpot.sh
 
-Now you can start your hotspot by starting script. Just run it...  For me it looks like this:
+Now you can start your hotspot by starting script. Just run it...  Run the command below to star the script
 ```
-root@kali:~# cd /root/Desktop/
-root@kali:~/Desktop# ./hotspot.sh
+./hotspot.sh
 ```
+Press ctrl+x to stop this hotspot. Now whenever you want to start hotspot just run this script.
+
+------------
+Credits:
+I used the following resources to create this guide. It took me a lof of time to create hotspot in parrot os. so I created this guide.
+https://anooppoommen.medium.com/create-a-wifi-hotspot-on-linux-29349b9c582d
+https://unix.stackexchange.com/questions/458057/how-to-create-a-wifi-hotspot-share-a-connection-on-kali-linux
