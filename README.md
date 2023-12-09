@@ -127,6 +127,9 @@ Press ctrl+x to stop this hotspot. Now whenever you want to start hotspot just r
 
 ------------
 Credits:
+
 I used the following resources to create this guide. It took me a lof of time to create hotspot in parrot os. so I created this guide.
+
 https://anooppoommen.medium.com/create-a-wifi-hotspot-on-linux-29349b9c582d
+
 https://unix.stackexchange.com/questions/458057/how-to-create-a-wifi-hotspot-share-a-connection-on-kali-linux
